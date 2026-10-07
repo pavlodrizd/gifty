@@ -23,8 +23,9 @@
           ink:   '#16191B',
           mist:  '#F7F7F5',
           line:  '#E5E4DF',
-          muted: '#6C726E',
-          sage:  { DEFAULT: '#2F5D50', dark: '#23473D', soft: '#E8EFEA' }
+          muted: '#5F6662',
+          sage:  { DEFAULT: '#2F5D50', dark: '#23473D', soft: '#E8EFEA' },
+          clay:  { DEFAULT: '#B4532A', soft: '#FBEFE8' }
         },
         fontFamily: {
           display: ['Fraunces', 'Georgia', 'serif'],
@@ -38,19 +39,26 @@
 <style>
   html { scroll-behavior: smooth; }
   body { -webkit-font-smoothing: antialiased; }
+  h1, h2 { text-wrap: balance; }
+  p { text-wrap: pretty; }
 
   .rise { opacity: 0; transform: translateY(12px); animation: rise .7s cubic-bezier(.2,.7,.3,1) forwards; }
   @keyframes rise { to { opacity: 1; transform: none; } }
 
-  .demo-swap { transition: opacity .35s ease, transform .35s ease; }
-  .demo-swap.is-out { opacity: 0; transform: translateY(6px); }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
+  .reveal.is-in { opacity: 1; transform: none; }
+
+  .demo-swap { transition: opacity .3s ease, transform .3s ease; }
+  .demo-swap.is-out { opacity: 0; transform: translateY(6px); transition-duration: .2s; }
 
   a:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 2px solid #2F5D50; outline-offset: 3px; border-radius: 4px;
+    outline: 2px solid #2F5D50; outline-offset: 3px; border-radius: 6px;
   }
+  .on-dark a:focus-visible { outline-color: #F7F7F5; }
 
   @media (prefers-reduced-motion: reduce) {
     .rise { animation: none; opacity: 1; transform: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
     .demo-swap { transition: none; }
     html { scroll-behavior: auto; }
   }
@@ -59,12 +67,14 @@
 
 <body class="bg-mist text-ink font-sans antialiased">
 
-<!-- ══ NAV ══ -->
-<header class="px-5 sm:px-8 py-5">
-  <div class="max-w-5xl mx-auto flex items-center justify-between">
-    <a href="#" class="flex items-center gap-2">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow" data-i18n="nav.skip">Vai al contenuto</a>
+
+<!-- ══ NAV (sticky) ══ -->
+<header id="site-header" class="sticky top-0 z-40 px-5 sm:px-8 bg-mist/85 backdrop-blur border-b border-transparent transition-colors duration-200">
+  <div class="max-w-5xl mx-auto h-16 flex items-center justify-between gap-3">
+    <a href="#" class="flex items-center gap-2 min-h-[44px]" aria-label="Gifty — home">
       <span class="w-7 h-7 rounded-lg bg-sage flex items-center justify-center">
-        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 13h18M12 8v13"/>
           <path d="M12 8S9.5 3.5 7 4.5 8 9 12 8zM12 8s2.5-4.5 5-3.5S16 9 12 8z"/>
         </svg>
@@ -72,26 +82,33 @@
       <span class="font-display text-xl font-semibold tracking-tight">Gifty</span>
     </a>
 
-    <div class="flex items-center gap-4">
-      <a href="#waitlist" class="text-sm font-medium text-muted hover:text-ink transition-colors" data-i18n="nav.waitlist">Waitlist</a>
+    <div class="flex items-center gap-1 sm:gap-2">
+      <nav class="hidden md:flex items-center gap-1 mr-2" aria-label="Sezioni">
+        <a href="#come-funziona" class="text-sm font-medium text-muted hover:text-ink px-3 py-3 transition-colors" data-i18n="nav.how">Come funziona</a>
+        <a href="#perche" class="text-sm font-medium text-muted hover:text-ink px-3 py-3 transition-colors" data-i18n="nav.why">Perché Gifty</a>
+        <a href="#supporta" class="text-sm font-medium text-muted hover:text-ink px-3 py-3 transition-colors" data-i18n="nav.support">Supporta</a>
+      </nav>
 
       <!-- Switch lingua -->
-      <div class="flex items-center bg-white border border-line rounded-full p-0.5" role="group" aria-label="Language">
-        <button type="button" data-lang="it" class="lang-btn text-xs font-medium px-2.5 py-1 rounded-full transition-colors">IT</button>
-        <button type="button" data-lang="en" class="lang-btn text-xs font-medium px-2.5 py-1 rounded-full transition-colors">EN</button>
+      <div class="flex items-center bg-white border border-line rounded-full p-0.5" role="group" aria-label="Lingua / Language">
+        <button type="button" data-lang="it" class="lang-btn cursor-pointer text-xs font-medium min-w-[40px] min-h-[36px] rounded-full transition-colors">IT</button>
+        <button type="button" data-lang="en" class="lang-btn cursor-pointer text-xs font-medium min-w-[40px] min-h-[36px] rounded-full transition-colors">EN</button>
       </div>
+
+      <a href="#waitlist" class="js-to-waitlist hidden sm:inline-flex items-center bg-sage hover:bg-sage-dark text-white text-sm font-medium rounded-xl px-4 min-h-[44px] ml-1 transition-colors" data-i18n="nav.cta">Entra nella waitlist</a>
     </div>
   </div>
 </header>
 
+<main id="main">
+
 <!-- ══ HERO ══ -->
-<main>
-<section class="px-5 sm:px-8 pt-8 pb-16 sm:pt-16 sm:pb-24">
+<section class="px-5 sm:px-8 pt-10 pb-16 sm:pt-16 sm:pb-24">
   <div class="max-w-5xl mx-auto grid lg:grid-cols-[1.05fr_.95fr] gap-12 lg:gap-16 items-center">
 
     <div>
-      <p class="rise inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[.14em] text-sage bg-sage-soft px-3 py-1.5 rounded-full">
-        <span class="w-1.5 h-1.5 rounded-full bg-sage"></span> <span data-i18n="hero.badge">In arrivo — lista d'attesa aperta</span>
+      <p class="rise inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[.14em] text-sage bg-sage-soft px-3 py-1.5 rounded-full">
+        <span class="w-1.5 h-1.5 rounded-full bg-sage" aria-hidden="true"></span> <span data-i18n="hero.badge">In arrivo — lista d'attesa aperta</span>
       </p>
 
       <h1 class="rise font-display text-[2.6rem] leading-[1.05] sm:text-6xl sm:leading-[1.03] font-semibold tracking-tight mt-6" style="animation-delay:.08s">
@@ -103,19 +120,23 @@
         Racconti in due righe chi è la persona — interessi, età, occasione. L'intelligenza artificiale ti propone tre idee mirate, con il link per comprarle subito.
       </p>
 
-      <div id="waitlist" class="rise mt-9 scroll-mt-24" style="animation-delay:.24s">
+      <div id="waitlist" class="rise mt-9 scroll-mt-28" style="animation-delay:.24s">
         <!-- TODO: collega l'action a Formspree, Supabase o al tuo endpoint -->
-        <form id="waitlist-form" class="flex flex-col sm:flex-row gap-2.5 max-w-md">
-          <label for="email" class="sr-only" data-i18n="form.label">Il tuo indirizzo email</label>
-          <input id="email" name="email" type="email" required autocomplete="email"
-                 placeholder="latua@email.com" data-i18n-placeholder="form.placeholder"
-                 class="flex-1 bg-white border border-line rounded-xl px-4 py-3.5 text-[15px] placeholder:text-muted/60 focus:border-sage focus:outline-none transition-colors">
-          <button type="submit" data-i18n="form.cta"
-                  class="bg-sage hover:bg-sage-dark active:scale-[.98] text-white font-medium text-[15px] rounded-xl px-6 py-3.5 transition-all whitespace-nowrap">
-            Entra nella waitlist
-          </button>
+        <form id="waitlist-form" class="max-w-md" novalidate>
+          <label for="email" class="block text-sm font-medium mb-2" data-i18n="form.label">Il tuo indirizzo email</label>
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <input id="email" name="email" type="email" required autocomplete="email" inputmode="email"
+                   placeholder="latua@email.com" data-i18n-placeholder="form.placeholder"
+                   aria-describedby="form-note form-error"
+                   class="flex-1 min-w-0 bg-white border border-line rounded-xl px-4 py-3.5 text-base placeholder:text-muted/70 focus:border-sage focus:outline-none transition-colors">
+            <button type="submit" data-i18n="form.cta"
+                    class="cursor-pointer bg-sage hover:bg-sage-dark active:scale-[.98] text-white font-medium text-[15px] rounded-xl px-6 py-3.5 transition-all duration-200 whitespace-nowrap">
+              Entra nella waitlist
+            </button>
+          </div>
+          <p id="form-error" class="hidden mt-2 text-sm font-medium text-clay" role="alert" data-i18n="form.error">Controlla l'indirizzo: sembra incompleto.</p>
         </form>
-        <p id="form-msg" class="hidden mt-3 text-[15px] font-medium text-sage" data-i18n="form.success">
+        <p id="form-msg" class="hidden text-[15px] font-medium text-sage" role="status" data-i18n="form.success">
           Ci sei. Ti scriviamo appena Gifty apre.
         </p>
         <p id="form-note" class="mt-3 text-sm text-muted" data-i18n="form.note">Niente spam. Un solo messaggio, il giorno del lancio.</p>
@@ -124,22 +145,22 @@
 
     <!-- Demo -->
     <div class="rise" style="animation-delay:.32s">
-      <div class="bg-white border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(22,25,27,.04),0_12px_32px_-12px_rgba(22,25,27,.10)]">
+      <div id="demo-card" class="bg-white border border-line rounded-2xl p-5 sm:p-6 shadow-[0_1px_2px_rgba(22,25,27,.04),0_12px_32px_-12px_rgba(22,25,27,.10)]">
 
-        <p class="text-[11px] font-medium uppercase tracking-[.14em] text-muted" data-i18n="demo.label">Chi devi sorprendere</p>
+        <p class="text-xs font-medium uppercase tracking-[.14em] text-muted" data-i18n="demo.label">Chi devi sorprendere</p>
         <p id="demo-who" class="demo-swap font-display text-xl font-semibold mt-1.5">Mia madre, 62 anni</p>
 
-        <div id="demo-chips" class="demo-swap flex flex-wrap gap-1.5 mt-4"></div>
+        <div id="demo-chips" class="demo-swap flex flex-wrap gap-1.5 mt-4 min-h-[64px] content-start"></div>
 
         <div class="flex items-center gap-3 my-5" aria-hidden="true">
           <span class="h-px flex-1 bg-line"></span>
           <svg class="w-4 h-4 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 4v16M6 10l6-6 6 6"/>
+            <path d="M12 4v16M6 14l6 6 6-6"/>
           </svg>
           <span class="h-px flex-1 bg-line"></span>
         </div>
 
-        <div id="demo-gift" class="demo-swap bg-mist border border-line rounded-xl p-4">
+        <div id="demo-gift" class="demo-swap bg-mist border border-line rounded-xl p-4 min-h-[148px]">
           <div class="flex items-start justify-between gap-4">
             <p id="gift-title" class="font-medium leading-snug"></p>
             <span id="gift-price" class="text-sm font-medium text-sage whitespace-nowrap"></span>
@@ -147,10 +168,12 @@
           <p id="gift-why" class="text-sm text-muted leading-relaxed mt-2"></p>
           <span class="inline-flex items-center gap-1.5 text-sm font-medium text-sage mt-3">
             <span data-i18n="demo.buy">Apri su Amazon</span>
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
           </span>
         </div>
 
+        <!-- Selettore esempi -->
+        <div id="demo-dots" class="flex items-center justify-center gap-1 mt-3" role="group" aria-label="Esempi"></div>
       </div>
       <p class="text-xs text-muted text-center mt-3" data-i18n="demo.caption">Esempio di suggerimento generato da Gifty</p>
     </div>
@@ -158,18 +181,48 @@
   </div>
 </section>
 
-<!-- ══ FEATURES ══ -->
-<section class="px-5 sm:px-8 py-16 sm:py-24 bg-white border-y border-line">
+<!-- ══ COME FUNZIONA ══ -->
+<section id="come-funziona" class="px-5 sm:px-8 py-16 sm:py-24 bg-white border-y border-line scroll-mt-16">
   <div class="max-w-5xl mx-auto">
-    <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-center" data-i18n="features.title">
+    <div class="max-w-xl">
+      <p class="text-xs font-medium uppercase tracking-[.14em] text-sage" data-i18n="how.eyebrow">Come funziona</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight mt-3" data-i18n="how.title">
+        Dal «non so cosa prendere» al carrello, in tre passi
+      </h2>
+    </div>
+
+    <ol class="grid sm:grid-cols-3 gap-10 sm:gap-8 mt-14">
+      <li class="reveal border-t-2 border-sage pt-5">
+        <span class="font-display text-3xl italic text-sage" aria-hidden="true">01</span>
+        <h3 class="font-display text-xl font-semibold mt-3" data-i18n="s1.title">Racconti la persona</h3>
+        <p class="text-muted leading-relaxed mt-2" data-i18n="s1.body">Due righe bastano: chi è, cosa le piace, per quale occasione e quanto vuoi spendere.</p>
+      </li>
+      <li class="reveal border-t-2 border-sage pt-5" style="transition-delay:.08s">
+        <span class="font-display text-3xl italic text-sage" aria-hidden="true">02</span>
+        <h3 class="font-display text-xl font-semibold mt-3" data-i18n="s2.title">L'AI propone tre idee</h3>
+        <p class="text-muted leading-relaxed mt-2" data-i18n="s2.body">Tre proposte mirate, ognuna con il motivo per cui è adatta proprio a lei o a lui.</p>
+      </li>
+      <li class="reveal border-t-2 border-sage pt-5" style="transition-delay:.16s">
+        <span class="font-display text-3xl italic text-sage" aria-hidden="true">03</span>
+        <h3 class="font-display text-xl font-semibold mt-3" data-i18n="s3.title">Compri con un tocco</h3>
+        <p class="text-muted leading-relaxed mt-2" data-i18n="s3.body">Ogni idea ha già il link diretto: scegli quella giusta e hai finito.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══ PERCHÉ GIFTY ══ -->
+<section id="perche" class="px-5 sm:px-8 py-16 sm:py-24 scroll-mt-16">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight max-w-xl" data-i18n="features.title">
       Tre problemi in meno, ogni volta che regali
     </h2>
 
-    <div class="grid sm:grid-cols-3 gap-10 sm:gap-8 mt-14">
+    <div class="grid sm:grid-cols-3 gap-5 mt-12">
 
-      <div>
+      <div class="reveal bg-white border border-line rounded-2xl p-6">
         <span class="w-11 h-11 rounded-xl bg-sage-soft flex items-center justify-center">
-          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
             <circle cx="12" cy="12" r="3.2"/>
           </svg>
@@ -180,9 +233,9 @@
         </p>
       </div>
 
-      <div>
+      <div class="reveal bg-white border border-line rounded-2xl p-6" style="transition-delay:.08s">
         <span class="w-11 h-11 rounded-xl bg-sage-soft flex items-center justify-center">
-          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>
           </svg>
         </span>
@@ -192,9 +245,9 @@
         </p>
       </div>
 
-      <div>
+      <div class="reveal bg-white border border-line rounded-2xl p-6" style="transition-delay:.16s">
         <span class="w-11 h-11 rounded-xl bg-sage-soft flex items-center justify-center">
-          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-5 h-5 text-sage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
           </svg>
         </span>
@@ -208,23 +261,62 @@
   </div>
 </section>
 
-<!-- ══ B2B ══ -->
-<section class="px-5 sm:px-8 py-16 sm:py-20">
-  <div class="max-w-5xl mx-auto bg-ink text-mist rounded-2xl px-6 py-10 sm:px-12 sm:py-12">
+<!-- ══ SUPPORTA (link referral Amazon) ══ -->
+<section id="supporta" class="px-5 sm:px-8 pb-16 sm:pb-20 scroll-mt-24">
+  <div class="reveal max-w-5xl mx-auto bg-sage-soft border border-sage/20 rounded-2xl px-6 py-10 sm:px-12 sm:py-12">
     <div class="sm:flex sm:items-center sm:justify-between sm:gap-10">
       <div class="max-w-xl">
-        <p class="text-[11px] font-medium uppercase tracking-[.14em] text-mist/50" data-i18n="b2b.eyebrow">Per le aziende</p>
+        <p class="text-xs font-medium uppercase tracking-[.14em] text-sage" data-i18n="support.eyebrow">Nel frattempo</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight mt-3" data-i18n="support.title">Intanto, se vuoi aiutarmi, usa questo link su Amazon</h2>
+        <p class="text-ink/75 leading-relaxed mt-3" data-i18n="support.body">
+          Gifty è ancora in costruzione. Se devi comprare qualcosa su Amazon, entra da qui prima di fare l'ordine: per te il prezzo non cambia, e una piccola commissione aiuta a portare avanti l'app.
+        </p>
+      </div>
+      <div class="mt-7 sm:mt-0 shrink-0">
+        <a href="https://link.amazon/B0f7V3L3m" target="_blank" rel="sponsored noopener"
+           class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-sage hover:bg-sage-dark active:scale-[.98] text-white font-medium rounded-xl px-6 py-3.5 transition-all duration-200 whitespace-nowrap">
+          <span data-i18n="support.cta">Apri Amazon dal mio link</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          <span class="sr-only" data-i18n="support.newtab">(si apre in una nuova scheda)</span>
+        </a>
+        <p class="text-xs text-ink/65 mt-3 sm:text-center" data-i18n="support.disclosure">Link affiliato Amazon</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ B2B ══ -->
+<section class="px-5 sm:px-8 pb-16 sm:pb-20">
+  <div class="on-dark reveal max-w-5xl mx-auto bg-ink text-mist rounded-2xl px-6 py-10 sm:px-12 sm:py-12">
+    <div class="sm:flex sm:items-center sm:justify-between sm:gap-10">
+      <div class="max-w-xl">
+        <p class="text-xs font-medium uppercase tracking-[.14em] text-mist/60" data-i18n="b2b.eyebrow">Per le aziende</p>
         <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight mt-3" data-i18n="b2b.title">Regali per il team, senza il pomeriggio perso</h2>
-        <p class="text-mist/70 leading-relaxed mt-3" data-i18n="b2b.body">
+        <p class="text-mist/75 leading-relaxed mt-3" data-i18n="b2b.body">
           Welfare aziendale, premi e regali di fine anno: Gifty sceglie per ogni persona invece di mandare a tutti lo stesso cesto. Stiamo selezionando i primi partner.
         </p>
       </div>
-      <a href="mailto:pavlodrizd.dev@gmail.com?subject=Gifty%20per%20le%20aziende"
-         class="inline-flex items-center gap-2 bg-mist text-ink font-medium rounded-xl px-6 py-3.5 mt-7 sm:mt-0 hover:bg-white transition-colors whitespace-nowrap">
+      <a id="b2b-link" href="mailto:pavlodrizd.dev@gmail.com?subject=Gifty%20per%20le%20aziende"
+         class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-mist text-ink font-medium rounded-xl px-6 py-3.5 mt-7 sm:mt-0 hover:bg-white transition-colors duration-200 whitespace-nowrap">
         <span data-i18n="b2b.cta">Parliamone</span>
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
+  </div>
+</section>
+
+<!-- ══ CTA FINALE ══ -->
+<section class="px-5 sm:px-8 py-16 sm:py-24 bg-white border-t border-line text-center">
+  <div class="reveal max-w-2xl mx-auto">
+    <h2 class="font-display text-3xl sm:text-5xl font-semibold tracking-tight leading-[1.08]">
+      <span data-i18n="final.title1">Il prossimo regalo</span>
+      <span class="italic text-sage" data-i18n="final.title2">lo azzecchi.</span>
+    </h2>
+    <p class="text-lg text-muted leading-relaxed mt-5" data-i18n="final.body">Lascia la tua email: ti avvisiamo il giorno in cui Gifty apre.</p>
+    <a href="#waitlist" class="js-to-waitlist inline-flex items-center justify-center gap-2 bg-sage hover:bg-sage-dark active:scale-[.98] text-white font-medium rounded-xl px-7 py-4 mt-8 transition-all duration-200">
+      <span data-i18n="form.cta">Entra nella waitlist</span>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+    </a>
   </div>
 </section>
 </main>
@@ -233,10 +325,10 @@
 <footer class="px-5 sm:px-8 py-10 border-t border-line">
   <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
     <p class="font-display text-lg font-semibold">Gifty</p>
-    <nav class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-      <a href="/privacy" class="hover:text-ink transition-colors" data-i18n="footer.privacy">Privacy Policy</a>
-      <a href="/cookie" class="hover:text-ink transition-colors" data-i18n="footer.cookie">Cookie Policy</a>
-      <a href="mailto:pavlodrizd.dev@gmail.com" class="hover:text-ink transition-colors">pavlodrizd.dev@gmail.com</a>
+    <nav class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-muted" aria-label="Footer">
+      <a href="/privacy" class="py-2 hover:text-ink transition-colors" data-i18n="footer.privacy">Privacy Policy</a>
+      <a href="/cookie" class="py-2 hover:text-ink transition-colors" data-i18n="footer.cookie">Cookie Policy</a>
+      <a href="mailto:pavlodrizd.dev@gmail.com" class="py-2 hover:text-ink transition-colors">pavlodrizd.dev@gmail.com</a>
     </nav>
   </div>
   <div class="max-w-5xl mx-auto mt-8 pt-6 border-t border-line flex flex-col sm:flex-row sm:justify-between gap-2 text-xs text-muted">
@@ -253,7 +345,11 @@ const I18N = {
       title: "Gifty — L'AI che trova il regalo perfetto al posto tuo",
       desc:  "Gifty è l'app che trasforma due righe su una persona in tre idee regalo mirate, con il link per comprarle subito. Entra nella waitlist."
     },
-    'nav.waitlist': 'Waitlist',
+    'nav.skip': 'Vai al contenuto',
+    'nav.how': 'Come funziona',
+    'nav.why': 'Perché Gifty',
+    'nav.support': 'Supporta',
+    'nav.cta': 'Entra nella waitlist',
     'hero.badge': "In arrivo — lista d'attesa aperta",
     'hero.title1': 'Il regalo perfetto esiste.',
     'hero.title2': 'Gifty lo trova per te.',
@@ -261,11 +357,21 @@ const I18N = {
     'form.label': 'Il tuo indirizzo email',
     'form.placeholder': 'latua@email.com',
     'form.cta': 'Entra nella waitlist',
+    'form.error': "Controlla l'indirizzo: sembra incompleto.",
     'form.success': 'Ci sei. Ti scriviamo appena Gifty apre.',
     'form.note': 'Niente spam. Un solo messaggio, il giorno del lancio.',
     'demo.label': 'Chi devi sorprendere',
     'demo.buy': 'Apri su Amazon',
     'demo.caption': 'Esempio di suggerimento generato da Gifty',
+    'demo.dot': 'Esempio',
+    'how.eyebrow': 'Come funziona',
+    'how.title': 'Dal «non so cosa prendere» al carrello, in tre passi',
+    's1.title': 'Racconti la persona',
+    's1.body': 'Due righe bastano: chi è, cosa le piace, per quale occasione e quanto vuoi spendere.',
+    's2.title': "L'AI propone tre idee",
+    's2.body': 'Tre proposte mirate, ognuna con il motivo per cui è adatta proprio a lei o a lui.',
+    's3.title': 'Compri con un tocco',
+    's3.body': 'Ogni idea ha già il link diretto: scegli quella giusta e hai finito.',
     'features.title': 'Tre problemi in meno, ogni volta che regali',
     'f1.title': 'Zero stress',
     'f1.body': 'Niente più tre ore di scroll che finiscono in un buono regalo. Rispondi a poche domande e le idee arrivano già filtrate.',
@@ -273,11 +379,20 @@ const I18N = {
     'f2.body': 'Ogni suggerimento parte da chi è davvero la persona: passioni, carattere, cosa ha già ricevuto e cosa non vuole vedere mai più.',
     'f3.title': 'Due minuti, non due ore',
     'f3.body': "Dall'idea al carrello senza cambiare app: ogni proposta arriva con il link diretto per l'acquisto.",
+    'support.eyebrow': 'Nel frattempo',
+    'support.title': 'Intanto, se vuoi aiutarmi, usa questo link su Amazon',
+    'support.body': "Gifty è ancora in costruzione. Se devi comprare qualcosa su Amazon, entra da qui prima di fare l'ordine: per te il prezzo non cambia, e una piccola commissione aiuta a portare avanti l'app.",
+    'support.cta': 'Apri Amazon dal mio link',
+    'support.newtab': '(si apre in una nuova scheda)',
+    'support.disclosure': 'Link affiliato Amazon',
     'b2b.eyebrow': 'Per le aziende',
     'b2b.title': 'Regali per il team, senza il pomeriggio perso',
     'b2b.body': 'Welfare aziendale, premi e regali di fine anno: Gifty sceglie per ogni persona invece di mandare a tutti lo stesso cesto. Stiamo selezionando i primi partner.',
     'b2b.cta': 'Parliamone',
     'b2b.subject': 'Gifty per le aziende',
+    'final.title1': 'Il prossimo regalo',
+    'final.title2': 'lo azzecchi.',
+    'final.body': 'Lascia la tua email: ti avvisiamo il giorno in cui Gifty apre.',
     'footer.privacy': 'Privacy Policy',
     'footer.cookie': 'Cookie Policy',
     'footer.copy': '© 2026 Gifty. Tutti i diritti riservati.',
@@ -300,7 +415,11 @@ const I18N = {
       title: 'Gifty — The AI that finds the perfect gift for you',
       desc:  'Gifty turns two lines about a person into three targeted gift ideas, with a link to buy them. Join the waitlist.'
     },
-    'nav.waitlist': 'Waitlist',
+    'nav.skip': 'Skip to content',
+    'nav.how': 'How it works',
+    'nav.why': 'Why Gifty',
+    'nav.support': 'Support',
+    'nav.cta': 'Join the waitlist',
     'hero.badge': 'Coming soon — waitlist open',
     'hero.title1': 'The perfect gift exists.',
     'hero.title2': 'Gifty finds it for you.',
@@ -308,11 +427,21 @@ const I18N = {
     'form.label': 'Your email address',
     'form.placeholder': 'you@email.com',
     'form.cta': 'Join the waitlist',
+    'form.error': 'Check the address: it looks incomplete.',
     'form.success': "You're in. We'll write the day Gifty opens.",
     'form.note': 'No spam. One message, on launch day.',
     'demo.label': 'Who you need to surprise',
     'demo.buy': 'Open on Amazon',
     'demo.caption': 'Example of a suggestion generated by Gifty',
+    'demo.dot': 'Example',
+    'how.eyebrow': 'How it works',
+    'how.title': 'From “no idea what to get” to the cart, in three steps',
+    's1.title': 'Describe the person',
+    's1.body': 'Two lines are enough: who they are, what they like, the occasion and your budget.',
+    's2.title': 'The AI suggests three ideas',
+    's2.body': 'Three targeted picks, each with the reason it fits that person in particular.',
+    's3.title': 'Buy in one tap',
+    's3.body': 'Every idea already has a direct link: pick the right one and you are done.',
     'features.title': 'Three problems fewer, every time you give a gift',
     'f1.title': 'Zero stress',
     'f1.body': 'No more three-hour scrolls that end in a gift card. Answer a few questions and the ideas arrive already filtered.',
@@ -320,11 +449,20 @@ const I18N = {
     'f2.body': 'Every suggestion starts from who the person really is: passions, character, what they already got and what they never want to see again.',
     'f3.title': 'Two minutes, not two hours',
     'f3.body': 'From idea to cart without switching app: every suggestion comes with a direct link to buy.',
+    'support.eyebrow': 'In the meantime',
+    'support.title': 'Meanwhile, if you want to help me, use this Amazon link',
+    'support.body': 'Gifty is still being built. If you need to buy something on Amazon, go through here before you order: the price stays the same for you, and a small commission helps keep the app moving.',
+    'support.cta': 'Open Amazon from my link',
+    'support.newtab': '(opens in a new tab)',
+    'support.disclosure': 'Amazon affiliate link',
     'b2b.eyebrow': 'For companies',
     'b2b.title': 'Gifts for the team, without losing an afternoon',
     'b2b.body': 'Corporate welfare, rewards and end-of-year gifts: Gifty picks for each person instead of sending everyone the same hamper. We are selecting our first partners.',
     'b2b.cta': "Let's talk",
     'b2b.subject': 'Gifty for companies',
+    'final.title1': 'Your next gift',
+    'final.title2': 'will land.',
+    'final.body': 'Leave your email: we will let you know the day Gifty opens.',
     'footer.privacy': 'Privacy Policy',
     'footer.cookie': 'Cookie Policy',
     'footer.copy': '© 2026 Gifty. All rights reserved.',
@@ -345,20 +483,75 @@ const I18N = {
 
 const ACTIVE   = 'bg-sage text-white';
 const INACTIVE = 'text-muted hover:text-ink';
-const chipClass = 'text-[13px] bg-mist border border-line rounded-full px-3 py-1';
+const chipClass = 'text-[13px] bg-mist border border-line rounded-full px-3 py-1 whitespace-nowrap';
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let lang = (navigator.language || 'it').toLowerCase().startsWith('it') ? 'it' : 'en';
 let i = 0;
 
+/* ═══ Demo ═══ */
+const swaps = document.querySelectorAll('.demo-swap');
+const dotsWrap = document.getElementById('demo-dots');
+
+function renderDots() {
+  const t = I18N[lang];
+  dotsWrap.innerHTML = '';
+  t.examples.forEach(function (ex, n) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'cursor-pointer w-8 h-8 flex items-center justify-center rounded-full';
+    b.setAttribute('aria-label', t['demo.dot'] + ' ' + (n + 1) + ': ' + ex.who);
+    b.setAttribute('aria-pressed', n === i);
+    const dot = document.createElement('span');
+    dot.className = 'block h-1.5 rounded-full transition-all duration-300 ' + (n === i ? 'w-5 bg-sage' : 'w-1.5 bg-line');
+    b.appendChild(dot);
+    b.addEventListener('click', function () { userPaused = true; showExample(n); });
+    dotsWrap.appendChild(b);
+  });
+}
+
 function renderExample(ex) {
   document.getElementById('demo-who').textContent = ex.who;
-  document.getElementById('demo-chips').innerHTML =
-    ex.chips.map(c => '<span class="' + chipClass + '">' + c + '</span>').join('');
+  const chips = document.getElementById('demo-chips');
+  chips.innerHTML = '';
+  ex.chips.forEach(function (c) {
+    const s = document.createElement('span');
+    s.className = chipClass;
+    s.textContent = c;
+    chips.appendChild(s);
+  });
   document.getElementById('gift-title').textContent = ex.title;
   document.getElementById('gift-price').textContent = ex.price;
   document.getElementById('gift-why').textContent   = ex.why;
+  renderDots();
 }
 
+function showExample(n) {
+  if (reduceMotion) { i = n; renderExample(I18N[lang].examples[i]); return; }
+  swaps.forEach(el => el.classList.add('is-out'));
+  setTimeout(function () {
+    i = n;
+    renderExample(I18N[lang].examples[i]);
+    swaps.forEach(el => el.classList.remove('is-out'));
+  }, 200);
+}
+
+/* Rotazione automatica: si ferma su hover, focus, scheda nascosta o scelta manuale */
+let userPaused = false, hoverPaused = false;
+const demoCard = document.getElementById('demo-card');
+demoCard.addEventListener('mouseenter', () => hoverPaused = true);
+demoCard.addEventListener('mouseleave', () => hoverPaused = false);
+demoCard.addEventListener('focusin',   () => hoverPaused = true);
+demoCard.addEventListener('focusout',  () => hoverPaused = false);
+
+if (!reduceMotion) {
+  setInterval(function () {
+    if (userPaused || hoverPaused || document.hidden) return;
+    showExample((i + 1) % I18N[lang].examples.length);
+  }, 4200);
+}
+
+/* ═══ Lingua ═══ */
 function setLang(next) {
   lang = next;
   const t = I18N[lang];
@@ -377,12 +570,12 @@ function setLang(next) {
   });
 
   // Oggetto della mail B2B tradotto
-  const b2bLink = document.querySelector('a[href^="mailto:pavlodrizd.dev@gmail.com?subject"]');
-  if (b2bLink) b2bLink.href = 'mailto:pavlodrizd.dev@gmail.com?subject=' + encodeURIComponent(t['b2b.subject']);
+  document.getElementById('b2b-link').href =
+    'mailto:pavlodrizd.dev@gmail.com?subject=' + encodeURIComponent(t['b2b.subject']);
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
     const on = btn.dataset.lang === lang;
-    btn.className = 'lang-btn text-xs font-medium px-2.5 py-1 rounded-full transition-colors ' + (on ? ACTIVE : INACTIVE);
+    btn.className = 'lang-btn cursor-pointer text-xs font-medium min-w-[40px] min-h-[36px] rounded-full transition-colors ' + (on ? ACTIVE : INACTIVE);
     btn.setAttribute('aria-pressed', on);
   });
 
@@ -396,26 +589,52 @@ document.querySelectorAll('.lang-btn').forEach(btn =>
 setLang(lang);
 
 /* ═══ Waitlist: sostituisci con la chiamata al tuo backend ═══ */
-document.getElementById('waitlist-form').addEventListener('submit', function (e) {
+const form  = document.getElementById('waitlist-form');
+const email = document.getElementById('email');
+const err   = document.getElementById('form-error');
+
+form.addEventListener('submit', function (e) {
   e.preventDefault();
+  if (!email.checkValidity()) {
+    err.classList.remove('hidden');
+    email.setAttribute('aria-invalid', 'true');
+    email.focus();
+    return;
+  }
   // fetch('https://formspree.io/f/XXXX', { method:'POST', body: new FormData(this) })
   this.classList.add('hidden');
   document.getElementById('form-note').classList.add('hidden');
   document.getElementById('form-msg').classList.remove('hidden');
 });
+email.addEventListener('input', function () {
+  err.classList.add('hidden');
+  email.removeAttribute('aria-invalid');
+});
 
-/* ═══ Demo: ciclo tra tre persone di esempio ═══ */
-const swaps = document.querySelectorAll('.demo-swap');
+/* I pulsanti "Entra nella waitlist" portano al form e mettono il cursore nel campo */
+document.querySelectorAll('.js-to-waitlist').forEach(a =>
+  a.addEventListener('click', function () {
+    setTimeout(() => { if (!form.classList.contains('hidden')) email.focus({ preventScroll: true }); }, reduceMotion ? 0 : 500);
+  })
+);
 
-if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  setInterval(function () {
-    swaps.forEach(el => el.classList.add('is-out'));
-    setTimeout(function () {
-      i = (i + 1) % I18N[lang].examples.length;
-      renderExample(I18N[lang].examples[i]);
-      swaps.forEach(el => el.classList.remove('is-out'));
-    }, 350);
-  }, 4200);
+/* ═══ Header: bordo quando si scrolla ═══ */
+const header = document.getElementById('site-header');
+function onScroll() { header.classList.toggle('border-line', window.scrollY > 8); header.classList.toggle('border-transparent', window.scrollY <= 8); }
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* ═══ Reveal allo scroll ═══ */
+const reveals = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window && !reduceMotion) {
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => io.observe(el));
+} else {
+  reveals.forEach(el => el.classList.add('is-in'));
 }
 </script>
 
